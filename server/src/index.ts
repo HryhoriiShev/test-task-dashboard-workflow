@@ -4,7 +4,6 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./config/env";
 import { prisma } from "./lib/prisma";
-import { apiLimiter } from "./middlewares/rate-limit";
 import businessRoutes from "./routes/business.routes";
 import reportRoutes from "./routes/report.routes";
 
@@ -20,8 +19,7 @@ app.use(morgan("dev"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Rate limiting
-app.use("/api", apiLimiter);
+
 
 // Health check endpoint
 app.get("/health", async (req, res) => {

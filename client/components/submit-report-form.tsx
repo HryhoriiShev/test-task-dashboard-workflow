@@ -4,13 +4,20 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  InfiniteData,
+} from "@tanstack/react-query";
 import { reportService } from "@/services/report.service";
 import { Business } from "@/types/business";
+import { Report } from "@/types/report";
+import { PaginatedResponse } from "@/types/api";
 import { Loader2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -31,14 +38,14 @@ const reportSchema = z.object({
     .min(0, "Customer count must be a positive number"),
   notes: z.string().optional(),
   image: z
-    .any()
+    .instanceof(FileList)
     .refine((files) => files && files.length > 0, "Image is required")
     .refine(
       (files) => !files || files[0]?.size <= 5000000,
       "Max file size is 5MB"
     ),
   video: z
-    .any()
+    .instanceof(FileList)
     .optional()
     .refine(
       (files) => !files || files.length === 0 || files[0]?.size <= 50000000,
@@ -70,13 +77,11 @@ export function SubmitReportForm({
     formState: { errors },
     reset,
     setValue,
-    watch,
     control,
+    resetField,
   } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
   });
-
-  const businessId = watch("businessId");
 
   const handleBusinessChange = (value: string) => {
     const id = parseInt(value);
@@ -95,10 +100,10 @@ export function SubmitReportForm({
       // Optimistically update cache
       queryClient.setQueryData(
         ["reports", newReport.businessId],
-        (old: any) => {
+        (old: InfiniteData<PaginatedResponse<Report>> | undefined) => {
           if (!old) return old;
 
-          const optimisticReport = {
+          const optimisticReport: Report = {
             id: Date.now(),
             sales: newReport.sales.toString(),
             expenses: newReport.expenses.toString(),
@@ -146,15 +151,15 @@ export function SubmitReportForm({
       if (serverReport) {
         queryClient.setQueryData(
           ["reports", variables.businessId],
-          (old: any) => {
+          (old: InfiniteData<PaginatedResponse<Report>> | undefined) => {
             if (!old) return old;
             return {
               ...old,
-              pages: old.pages.map((page: any, index: number) => {
+              pages: old.pages.map((page, index) => {
                 if (index === 0) {
                   return {
                     ...page,
-                    data: page.data.map((report: any) =>
+                    data: page.data.map((report) =>
                       report.id === Date.now() ? serverReport : report
                     ),
                   };
@@ -330,8 +335,10 @@ export function SubmitReportForm({
               </label>
             ) : (
               <div className="relative">
-                <img
+                <Image
                   src={imagePreview}
+                  width={160}
+                  height={160}
                   alt="Preview"
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -341,7 +348,7 @@ export function SubmitReportForm({
                   variant="destructive"
                   onClick={() => {
                     setImagePreview(null);
-                    setValue("image", null);
+                    resetField("image");
                   }}
                   className="absolute top-2 right-2 h-8 w-8"
                 >
@@ -389,7 +396,7 @@ export function SubmitReportForm({
                   variant="destructive"
                   onClick={() => {
                     setVideoPreview(null);
-                    setValue("video", null);
+                    resetField("video");
                   }}
                   className="absolute top-2 right-2 h-8 w-8"
                 >

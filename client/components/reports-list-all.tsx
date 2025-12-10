@@ -76,10 +76,10 @@ export function ReportsListAll({
 
   if (allReports.length === 0) {
     return (
-      <Card className="border-dashed border-2 border-slate-200 bg-gradient-to-br from-slate-50 to-white">
+      <Card className="border-dashed border-2 border-slate-200 bg-linear-to-br from-slate-50 to-white">
         <CardContent className="p-16 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-slate-100 to-slate-200 flex items-center justify-center">
               <FileText className="w-10 h-10 text-slate-400" />
             </div>
           </div>
@@ -109,7 +109,7 @@ export function ReportsListAll({
     <div className="space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-6 shadow-xl shadow-emerald-500/20">
+        <div className="bg-linear-to-br from-emerald-500 to-teal-500 rounded-2xl p-6 shadow-xl shadow-emerald-500/20">
           <div className="flex items-center justify-between mb-2">
             <p className="text-emerald-100 text-sm font-medium">Total Sales</p>
             <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -124,7 +124,7 @@ export function ReportsListAll({
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl p-6 shadow-xl shadow-rose-500/20">
+        <div className="bg-linear-to-br from-rose-500 to-pink-500 rounded-2xl p-6 shadow-xl shadow-rose-500/20">
           <div className="flex items-center justify-between mb-2">
             <p className="text-rose-100 text-sm font-medium">Total Expenses</p>
             <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -137,7 +137,7 @@ export function ReportsListAll({
           <p className="text-rose-100 text-xs">{totalReports} total reports</p>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 shadow-xl shadow-blue-500/20">
+        <div className="bg-linear-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 shadow-xl shadow-blue-500/20">
           <div className="flex items-center justify-between mb-2">
             <p className="text-blue-100 text-sm font-medium">Net Profit</p>
             <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -157,7 +157,6 @@ export function ReportsListAll({
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {allReports.map((report) => {
           const profit = parseFloat(report.sales) - parseFloat(report.expenses);
-          const profitColor = profit >= 0 ? "emerald" : "rose";
 
           return (
             <Card
@@ -165,13 +164,13 @@ export function ReportsListAll({
               className="group relative overflow-hidden border border-slate-200 bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:border-slate-300"
             >
               {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
               <CardContent className="p-5 relative z-10">
                 {/* Business Name */}
                 {report.business && (
                   <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-100">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0">
                       <Building2 className="w-4 h-4 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 truncate flex-1">
@@ -182,7 +181,7 @@ export function ReportsListAll({
 
                 {/* Date */}
                 <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-                  <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                  <Calendar className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate">
                     {new Date(report.createdAt).toLocaleDateString("en-US", {
                       month: "short",
@@ -198,7 +197,7 @@ export function ReportsListAll({
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100">
                     <div className="flex items-center gap-2 min-w-0">
-                      <DollarSign className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span className="text-xs text-slate-600 font-medium">
                         Sales
                       </span>
@@ -210,7 +209,7 @@ export function ReportsListAll({
 
                   <div className="flex items-center justify-between p-3 rounded-xl bg-rose-50 border border-rose-100">
                     <div className="flex items-center gap-2 min-w-0">
-                      <TrendingDown className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                      <TrendingDown className="w-4 h-4 text-rose-600 shrink-0" />
                       <span className="text-xs text-slate-600 font-medium">
                         Expenses
                       </span>
@@ -222,7 +221,7 @@ export function ReportsListAll({
 
                   <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Users className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <Users className="w-4 h-4 text-blue-600 shrink-0" />
                       <span className="text-xs text-slate-600 font-medium">
                         Customers
                       </span>

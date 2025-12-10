@@ -4,9 +4,16 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  InfiniteData,
+} from "@tanstack/react-query";
 import { reportService } from "@/services/report.service";
 import { Business } from "@/types/business";
+import { Report } from "@/types/report";
+import { PaginatedResponse } from "@/types/api";
+import Image from "next/image";
 import {
   Loader2,
   Upload,
@@ -75,7 +82,6 @@ export function SubmitReportDialog({
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
     control,
   } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
@@ -103,37 +109,40 @@ export function SubmitReportDialog({
       });
 
       // Optimistically update cache
-      queryClient.setQueryData(["reports"], (old: any) => {
-        if (!old) return old;
+      queryClient.setQueryData(
+        ["reports"],
+        (old: InfiniteData<PaginatedResponse<Report>> | undefined) => {
+          if (!old) return old;
 
-        const optimisticReport = {
-          id: Date.now(),
-          sales: newReport.sales.toString(),
-          expenses: newReport.expenses.toString(),
-          customerCount: newReport.customerCount,
-          notes: newReport.notes || null,
-          imageUrl: imagePreview || "",
-          videoUrl: videoPreview || null,
-          businessId: newReport.businessId,
-          business: businesses.find((b) => b.id === newReport.businessId),
-          createdAt: new Date().toISOString(),
-        };
+          const optimisticReport: Report = {
+            id: Date.now(),
+            sales: newReport.sales.toString(),
+            expenses: newReport.expenses.toString(),
+            customerCount: newReport.customerCount,
+            notes: newReport.notes || null,
+            imageUrl: imagePreview || "",
+            videoUrl: videoPreview || null,
+            businessId: newReport.businessId,
+            business: businesses.find((b) => b.id === newReport.businessId),
+            createdAt: new Date().toISOString(),
+          };
 
-        return {
-          ...old,
-          pages: [
-            {
-              ...old.pages[0],
-              data: [optimisticReport, ...old.pages[0].data],
-              meta: {
-                ...old.pages[0].meta,
-                total: old.pages[0].meta.total + 1,
+          return {
+            ...old,
+            pages: [
+              {
+                ...old.pages[0],
+                data: [optimisticReport, ...old.pages[0].data],
+                meta: {
+                  ...old.pages[0].meta,
+                  total: old.pages[0].meta.total + 1,
+                },
               },
-            },
-            ...old.pages.slice(1),
-          ],
-        };
-      });
+              ...old.pages.slice(1),
+            ],
+          };
+        }
+      );
     },
     onSuccess: () => {
       reset();
@@ -207,18 +216,18 @@ export function SubmitReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white to-slate-50 border-slate-200">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-linear-to-br from-white to-slate-50 border-slate-200">
         <DialogHeader className="pb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <FileText className="w-5 h-5 text-white" />
             </div>
             <div>
-              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+              <DialogTitle className="text-xl font-bold bg-linear-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 Submit Daily Report
               </DialogTitle>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Record today's business performance
+                Record today&apos;s business performance
               </p>
             </div>
           </div>
@@ -226,8 +235,8 @@ export function SubmitReportDialog({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
           {error && (
-            <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="bg-linear-to-r from-red-50 to-rose-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-red-600">!</span>
               </div>
               <p className="text-sm flex-1">{error}</p>
@@ -375,7 +384,7 @@ export function SubmitReportDialog({
               {!imagePreview ? (
                 <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all group">
                   <div className="flex flex-col items-center justify-center py-6">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                    <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
                       <Upload className="w-6 h-6 text-blue-600" />
                     </div>
                     <p className="text-sm font-medium text-slate-700 mb-1">
@@ -392,8 +401,10 @@ export function SubmitReportDialog({
                 </label>
               ) : (
                 <div className="relative group">
-                  <img
-                    src={imagePreview}
+                  <Image
+                      src={imagePreview}
+                      width={160}
+                      height={160}
                     alt="Preview"
                     className="w-full h-40 object-cover rounded-xl border-2 border-slate-200"
                   />
@@ -423,7 +434,7 @@ export function SubmitReportDialog({
               {!videoPreview ? (
                 <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-purple-400 hover:bg-purple-50/50 transition-all group">
                   <div className="flex flex-col items-center justify-center py-6">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                    <div className="w-12 h-12 rounded-xl bg-linear-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
                       <Upload className="w-6 h-6 text-purple-600" />
                     </div>
                     <p className="text-sm font-medium text-slate-700 mb-1">
@@ -479,7 +490,7 @@ export function SubmitReportDialog({
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
+              className="flex-1 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
             >
               {mutation.isPending && (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
