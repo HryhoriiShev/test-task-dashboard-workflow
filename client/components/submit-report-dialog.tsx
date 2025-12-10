@@ -402,9 +402,9 @@ export function SubmitReportDialog({
               ) : (
                 <div className="relative group">
                   <Image
-                      src={imagePreview}
-                      width={160}
-                      height={160}
+                    src={imagePreview}
+                    width={160}
+                    height={160}
                     alt="Preview"
                     className="w-full h-40 object-cover rounded-xl border-2 border-slate-200"
                   />
