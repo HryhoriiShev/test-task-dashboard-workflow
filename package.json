@@ -1,0 +1,32 @@
+{
+  "name": "ovasight-monorepo",
+  "version": "1.0.0",
+  "description": "OvaSight - Business Reporting Platform Monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.25.0",
+  "scripts": {
+    "dev": "pnpm --filter server dev",
+    "build": "pnpm --recursive --stream build",
+    "clean": "pnpm --recursive --stream clean",
+    "db:migrate": "pnpm --filter server db:migrate",
+    "db:studio": "pnpm --filter server db:studio",
+    "db:generate": "pnpm --filter server db:generate",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "keywords": [
+    "monorepo",
+    "pnpm",
+    "workspace",
+    "express",
+    "prisma",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

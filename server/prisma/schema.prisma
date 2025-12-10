@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id         Int      @id @default(autoincrement())
+  name       String
+  ownerName  String
+  ownerPhone String
+  category   String
+  city       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  reports Report[]
+}
+
+model Report {
+  id Int @id @default(autoincrement())
+
+  sales         Decimal @db.Decimal(10, 2)
+  expenses      Decimal @db.Decimal(10, 2)
+  customerCount Int
+  notes         String?
+
+  imageUrl String
+  videoUrl String?
+
+  businessId Int
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([businessId])
+  @@index([createdAt])
+}
