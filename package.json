@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "pnpm --filter server dev",
     "build": "pnpm --recursive --stream build",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "lint": "pnpm --recursive --stream lint",
     "clean": "pnpm --recursive --stream clean",
     "db:migrate": "pnpm --filter server db:migrate",
     "db:studio": "pnpm --filter server db:studio",
@@ -28,5 +31,8 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
   }
 }
