@@ -7,7 +7,17 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { reportService } from "@/services/report.service";
 import { Business } from "@/types/business";
-import { Loader2, Upload, X } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  X,
+  FileText,
+  DollarSign,
+  Users,
+  TrendingDown,
+  Image as ImageIcon,
+  Video,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -197,20 +207,40 @@ export function SubmitReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Submit Daily Report</DialogTitle>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white to-slate-50 border-slate-200">
+        <DialogHeader className="pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                Submit Daily Report
+              </DialogTitle>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Record today's business performance
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
+            <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-red-600">!</span>
+              </div>
+              <p className="text-sm flex-1">{error}</p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="businessId">Select Business *</Label>
+            <Label
+              htmlFor="businessId"
+              className="text-sm font-semibold text-slate-700"
+            >
+              Select Business *
+            </Label>
             <Controller
               name="businessId"
               control={control}
@@ -221,12 +251,12 @@ export function SubmitReportDialog({
                   }}
                   value={field.value?.toString()}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20">
                     <SelectValue placeholder="Choose a business" />
                   </SelectTrigger>
                   <SelectContent>
                     {businesses.length === 0 ? (
-                      <div className="p-4 text-sm text-gray-500 text-center">
+                      <div className="p-4 text-sm text-slate-500 text-center">
                         No businesses available. Add one from the dashboard.
                       </div>
                     ) : (
@@ -244,80 +274,114 @@ export function SubmitReportDialog({
               )}
             />
             {errors.businessId && (
-              <p className="text-sm text-red-600">
+              <p className="text-xs text-red-600 font-medium">
                 {errors.businessId.message}
               </p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="sales">Sales ($) *</Label>
+              <Label
+                htmlFor="sales"
+                className="text-sm font-semibold text-slate-700 flex items-center gap-2"
+              >
+                <DollarSign className="w-4 h-4 text-emerald-600" />
+                Sales ($) *
+              </Label>
               <Input
                 id="sales"
                 {...register("sales", { valueAsNumber: true })}
                 type="number"
                 step="0.01"
                 placeholder="0.00"
+                className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
               />
               {errors.sales && (
-                <p className="text-sm text-red-600">{errors.sales.message}</p>
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.sales.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expenses">Expenses ($) *</Label>
+              <Label
+                htmlFor="expenses"
+                className="text-sm font-semibold text-slate-700 flex items-center gap-2"
+              >
+                <TrendingDown className="w-4 h-4 text-rose-600" />
+                Expenses ($) *
+              </Label>
               <Input
                 id="expenses"
                 {...register("expenses", { valueAsNumber: true })}
                 type="number"
                 step="0.01"
                 placeholder="0.00"
+                className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
               />
               {errors.expenses && (
-                <p className="text-sm text-red-600">
+                <p className="text-xs text-red-600 font-medium">
                   {errors.expenses.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="customerCount"
+                className="text-sm font-semibold text-slate-700 flex items-center gap-2"
+              >
+                <Users className="w-4 h-4 text-blue-600" />
+                Customers *
+              </Label>
+              <Input
+                id="customerCount"
+                {...register("customerCount", { valueAsNumber: true })}
+                type="number"
+                placeholder="0"
+                className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+              />
+              {errors.customerCount && (
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.customerCount.message}
                 </p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="customerCount">Customer Count *</Label>
-            <Input
-              id="customerCount"
-              {...register("customerCount", { valueAsNumber: true })}
-              type="number"
-              placeholder="0"
-            />
-            {errors.customerCount && (
-              <p className="text-sm text-red-600">
-                {errors.customerCount.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label
+              htmlFor="notes"
+              className="text-sm font-semibold text-slate-700"
+            >
+              Notes (Optional)
+            </Label>
             <textarea
               id="notes"
               {...register("notes")}
               rows={3}
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              placeholder="Any additional notes..."
+              className="flex min-h-[80px] w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus:border-emerald-500 transition"
+              placeholder="Add any additional notes about today's business..."
             />
           </div>
 
-          <div>
-            <Label className="block text-sm font-medium mb-2">Photo *</Label>
-            <div className="mt-1">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-blue-600" />
+                Photo *
+              </Label>
               {!imagePreview ? (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-green-400 transition">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">
-                      Click to upload photo
+                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all group">
+                  <div className="flex flex-col items-center justify-center py-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                      <Upload className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 mb-1">
+                      Upload photo
                     </p>
+                    <p className="text-xs text-slate-500">Max 5MB (JPG, PNG)</p>
                   </div>
                   <input
                     type="file"
@@ -327,40 +391,46 @@ export function SubmitReportDialog({
                   />
                 </label>
               ) : (
-                <div className="relative">
+                <div className="relative group">
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-full h-40 object-cover rounded-xl border-2 border-slate-200"
                   />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => {
-                      setImagePreview(null);
-                      setImageFile(null);
-                    }}
-                    className="absolute top-2 right-2 h-8 w-8"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition rounded-xl flex items-center justify-center">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setImageFile(null);
+                      }}
+                      className="h-10 w-10 shadow-lg"
+                    >
+                      <X className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
 
-          <div>
-            <Label className="block text-sm font-medium mb-2">
-              Video (Optional)
-            </Label>
-            <div className="mt-1">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <Video className="w-4 h-4 text-purple-600" />
+                Video (Optional)
+              </Label>
               {!videoPreview ? (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-green-400 transition">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">
-                      Click to upload video
+                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-purple-400 hover:bg-purple-50/50 transition-all group">
+                  <div className="flex flex-col items-center justify-center py-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                      <Upload className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 mb-1">
+                      Upload video
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Max 50MB (MP4, MOV)
                     </p>
                   </div>
                   <input
@@ -371,42 +441,45 @@ export function SubmitReportDialog({
                   />
                 </label>
               ) : (
-                <div className="relative">
+                <div className="relative group">
                   <video
                     src={videoPreview}
-                    className="w-full h-48 rounded-lg"
+                    className="w-full h-40 rounded-xl border-2 border-slate-200 object-cover"
                     controls
                   />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => {
-                      setVideoPreview(null);
-                      setVideoFile(null);
-                    }}
-                    className="absolute top-2 right-2 h-8 w-8"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => {
+                        setVideoPreview(null);
+                        setVideoFile(null);
+                      }}
+                      className="h-8 w-8 shadow-lg opacity-90 hover:opacity-100"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              className="flex-1"
+              className="flex-1 border-slate-200 hover:bg-slate-50"
+              disabled={mutation.isPending}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
             >
               {mutation.isPending && (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />

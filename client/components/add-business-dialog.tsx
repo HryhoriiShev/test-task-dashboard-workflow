@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { businessService } from "@/services/business.service";
-import { Loader2 } from "lucide-react";
+import { Loader2, Building2 } from "lucide-react";
 import { AxiosError } from "axios";
 import {
   Dialog,
@@ -141,90 +141,152 @@ export function AddBusinessDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Business</DialogTitle>
+      <DialogContent className="max-w-lg bg-gradient-to-br from-white to-slate-50 border-slate-200">
+        <DialogHeader className="pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Building2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                Add New Business
+              </DialogTitle>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Register a new business to the platform
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-2">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
+            <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-red-600">!</span>
+              </div>
+              <p className="text-sm flex-1">{error}</p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="name">Business Name *</Label>
+            <Label
+              htmlFor="name"
+              className="text-sm font-semibold text-slate-700"
+            >
+              Business Name *
+            </Label>
             <Input
               id="name"
               {...register("name")}
               placeholder="Enter business name"
+              className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
             />
             {errors.name && (
-              <p className="text-sm text-red-600">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ownerName">Owner Name *</Label>
-            <Input
-              id="ownerName"
-              {...register("ownerName")}
-              placeholder="Enter owner name"
-            />
-            {errors.ownerName && (
-              <p className="text-sm text-red-600">{errors.ownerName.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ownerPhone">Owner Phone *</Label>
-            <Input
-              id="ownerPhone"
-              type="tel"
-              {...register("ownerPhone")}
-              placeholder="Enter phone number"
-            />
-            {errors.ownerPhone && (
-              <p className="text-sm text-red-600">
-                {errors.ownerPhone.message}
+              <p className="text-xs text-red-600 font-medium">
+                {errors.name.message}
               </p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
-            <Input
-              id="category"
-              {...register("category")}
-              placeholder="e.g., Restaurant, Retail, Services"
-            />
-            {errors.category && (
-              <p className="text-sm text-red-600">{errors.category.message}</p>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="ownerName"
+                className="text-sm font-semibold text-slate-700"
+              >
+                Owner Name *
+              </Label>
+              <Input
+                id="ownerName"
+                {...register("ownerName")}
+                placeholder="John Doe"
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+              {errors.ownerName && (
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.ownerName.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="ownerPhone"
+                className="text-sm font-semibold text-slate-700"
+              >
+                Owner Phone *
+              </Label>
+              <Input
+                id="ownerPhone"
+                type="tel"
+                {...register("ownerPhone")}
+                placeholder="+1234567890"
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+              {errors.ownerPhone && (
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.ownerPhone.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="city">City *</Label>
-            <Input id="city" {...register("city")} placeholder="Enter city" />
-            {errors.city && (
-              <p className="text-sm text-red-600">{errors.city.message}</p>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="category"
+                className="text-sm font-semibold text-slate-700"
+              >
+                Category *
+              </Label>
+              <Input
+                id="category"
+                {...register("category")}
+                placeholder="Restaurant"
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+              {errors.category && (
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.category.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="city"
+                className="text-sm font-semibold text-slate-700"
+              >
+                City *
+              </Label>
+              <Input
+                id="city"
+                {...register("city")}
+                placeholder="New York"
+                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+              />
+              {errors.city && (
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.city.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1"
+              className="flex-1 border-slate-200 hover:bg-slate-50"
+              disabled={mutation.isPending}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-500/30"
             >
               {mutation.isPending && (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
