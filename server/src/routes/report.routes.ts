@@ -15,6 +15,7 @@ router.post(
   ReportController.create
 );
 
+router.get("/", ReportController.list);
 router.get("/business/:businessId", ReportController.listByBusiness);
 
 export default router;

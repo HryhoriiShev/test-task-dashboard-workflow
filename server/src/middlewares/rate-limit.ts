@@ -10,7 +10,7 @@ export const apiLimiter = rateLimit({
 
 export const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 100,
   message: "Too many upload requests from this IP, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -18,7 +18,7 @@ export const uploadLimiter = rateLimit({
 
 export const createLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 5,
+  max: 100,
   message: "Too many creation requests from this IP, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,

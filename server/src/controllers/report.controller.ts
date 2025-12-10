@@ -12,6 +12,39 @@ const createReportSchema = z.object({
 });
 
 export const ReportController = {
+  async list(req: Request, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
+
+      const [reports, total] = await Promise.all([
+        prisma.report.findMany({
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+          include: {
+            business: true,
+          },
+        }),
+        prisma.report.count(),
+      ]);
+
+      res.json({
+        data: reports,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    } catch (error: unknown) {
+      console.error("Failed to list reports:", error);
+      res.status(500).json({ error: "Failed to list reports" });
+    }
+  },
+
   async create(req: Request, res: Response): Promise<void> {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -34,6 +67,9 @@ export const ReportController = {
           notes: data.notes ?? null,
           imageUrl: imageFile.location,
           videoUrl: videoFile ? videoFile.location : null,
+        },
+        include: {
+          business: true,
         },
       });
 
@@ -64,6 +100,9 @@ export const ReportController = {
           skip: skip,
           take: limit,
           orderBy: { createdAt: "desc" },
+          include: {
+            business: true,
+          },
         }),
         prisma.report.count({
           where: { businessId: id },
