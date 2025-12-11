@@ -16,7 +16,8 @@ import {
   Calendar,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { MediaViewerDialog } from "./media-viewer-dialog";
 
 interface ReportsListAllProps {
   reports: InfiniteData<PaginatedResponse<Report>> | undefined;
@@ -34,6 +35,21 @@ export function ReportsListAll({
   isFetchingNextPage,
 }: ReportsListAllProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [mediaViewerOpen, setMediaViewerOpen] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<{
+    url: string;
+    type: "image" | "video";
+    businessName?: string;
+  } | null>(null);
+
+  const openMediaViewer = (
+    url: string,
+    type: "image" | "video",
+    businessName?: string
+  ) => {
+    setSelectedMedia({ url, type, businessName });
+    setMediaViewerOpen(true);
+  };
 
   // Infinite scroll observer
   useEffect(() => {
@@ -244,26 +260,34 @@ export function ReportsListAll({
                 {/* Media Links */}
                 <div className="flex gap-2 mb-4">
                   {report.imageUrl && (
-                    <a
-                      href={report.imageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() =>
+                        openMediaViewer(
+                          report.imageUrl,
+                          "image",
+                          report.business?.name
+                        )
+                      }
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 border border-blue-100 transition"
                     >
                       <ImageIcon className="w-3.5 h-3.5" />
-                      Photo
-                    </a>
+                      View Photo
+                    </button>
                   )}
                   {report.videoUrl && (
-                    <a
-                      href={report.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() =>
+                        openMediaViewer(
+                          report.videoUrl || "",
+                          "video",
+                          report.business?.name
+                        )
+                      }
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 border border-purple-100 transition"
                     >
                       <Video className="w-3.5 h-3.5" />
-                      Video
-                    </a>
+                      View Video
+                    </button>
                   )}
                 </div>
 
@@ -302,6 +326,15 @@ export function ReportsListAll({
           </p>
         )}
       </div>
+
+      {/* Media Viewer Dialog */}
+      <MediaViewerDialog
+        open={mediaViewerOpen}
+        onOpenChange={setMediaViewerOpen}
+        mediaUrl={selectedMedia?.url || null}
+        mediaType={selectedMedia?.type || null}
+        businessName={selectedMedia?.businessName}
+      />
     </div>
   );
 }

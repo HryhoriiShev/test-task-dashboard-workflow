@@ -7,12 +7,9 @@ import { z } from "zod";
 import {
   useMutation,
   useQueryClient,
-  InfiniteData,
 } from "@tanstack/react-query";
 import { reportService } from "@/services/report.service";
 import { Business } from "@/types/business";
-import { Report } from "@/types/report";
-import { PaginatedResponse } from "@/types/api";
 import Image from "next/image";
 import {
   Loader2,
@@ -102,49 +99,12 @@ export function SubmitReportDialog({
 
   const mutation = useMutation({
     mutationFn: reportService.create,
-    onMutate: async (newReport) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({
+    onSuccess: () => {
+      // Invalidate all report queries to refetch with new data
+      queryClient.invalidateQueries({
         queryKey: ["reports"],
       });
 
-      // Optimistically update cache
-      queryClient.setQueryData(
-        ["reports"],
-        (old: InfiniteData<PaginatedResponse<Report>> | undefined) => {
-          if (!old) return old;
-
-          const optimisticReport: Report = {
-            id: Date.now(),
-            sales: newReport.sales.toString(),
-            expenses: newReport.expenses.toString(),
-            customerCount: newReport.customerCount,
-            notes: newReport.notes || null,
-            imageUrl: imagePreview || "",
-            videoUrl: videoPreview || null,
-            businessId: newReport.businessId,
-            business: businesses.find((b) => b.id === newReport.businessId),
-            createdAt: new Date().toISOString(),
-          };
-
-          return {
-            ...old,
-            pages: [
-              {
-                ...old.pages[0],
-                data: [optimisticReport, ...old.pages[0].data],
-                meta: {
-                  ...old.pages[0].meta,
-                  total: old.pages[0].meta.total + 1,
-                },
-              },
-              ...old.pages.slice(1),
-            ],
-          };
-        }
-      );
-    },
-    onSuccess: () => {
       reset();
       setError(null);
       setImagePreview(null);
