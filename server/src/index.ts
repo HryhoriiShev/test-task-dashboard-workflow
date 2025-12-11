@@ -11,7 +11,12 @@ const app = express();
 const PORT = env.PORT;
 
 // Security middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // Allow all origins for this test task
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(helmet());
 app.use(morgan("dev"));
 
